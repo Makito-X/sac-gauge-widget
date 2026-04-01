@@ -1,0 +1,42 @@
+{
+  "id": "com.simple.gauge",
+  "version": "1.0.0",
+  "name": "Simple Gauge",
+  "description": "Gauge Widget",
+
+  "newInstancePrefix": "SimpleGauge",
+
+  "webcomponents": [
+    {
+      "kind": "main",
+      "tag": "com-simple-gauge",
+      "url": "box.js",
+      "integrity": "sha256-W4f9pL7ap9rG0dF9v3l8k7pGkQ0mQ2M0X0n8dS7n3lU="
+    }
+  ],
+
+  "properties": {
+    "value": {
+      "type": "number",
+      "default": 50
+    },
+    "color": {
+      "type": "string",
+      "default": "#00bcd4"
+    }
+  },
+
+  "methods": {
+    "setValue": {
+      "description": "Set gauge value",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "number"
+        }
+      ]
+    }
+  },
+
+  "events": {}
+}
