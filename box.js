@@ -2,62 +2,66 @@ class SimpleGauge extends HTMLElement {
   constructor() {
     super();
 
-    this._shadowRoot = this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: "open" });
 
-    this._shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = `
       <style>
         svg {
           width: 100%;
           height: 100%;
         }
         text {
-          font-size: 20px;
+          font-size: 22px;
           fill: #333;
-          dominant-baseline: middle;
           text-anchor: middle;
         }
       </style>
 
-      <svg viewBox="0 0 200 200">
-        <!-- Background -->
-        <circle cx="100" cy="100" r="80"
+      <svg viewBox="0 0 200 120">
+        <!-- Background Halbkreis -->
+        <path id="bg"
+          d="M 20 100 A 80 80 0 0 1 180 100"
           stroke="#eee"
           stroke-width="12"
-          fill="none"/>
+          fill="none"
+        />
 
-        <!-- Progress -->
-        <circle id="progress"
-          cx="100" cy="100" r="80"
+        <!-- Progress Halbkreis -->
+        <path id="progress"
+          d="M 20 100 A 80 80 0 0 1 180 100"
           stroke="#00bcd4"
           stroke-width="12"
           fill="none"
           stroke-linecap="round"
-          transform="rotate(-90 100 100)"
         />
 
+        <!-- Wert -->
+        <text id="value" x="100" y="70">50%</text>
+
         <!-- Label -->
-        <text id="label" x="100" y="100">50%</text>
+        <text id="label" x="100" y="95" style="font-size:14px; fill:#777;">
+          Gauge
+        </text>
       </svg>
     `;
   }
 
-  onCustomWidgetAfterUpdate(changedProperties) {
+  onCustomWidgetAfterUpdate() {
     const value = this.value || 0;
     const color = this.color || "#00bcd4";
 
-    const radius = 80;
-    const circumference = 2 * Math.PI * radius;
+    const progress = this.shadowRoot.getElementById("progress");
+    const valueText = this.shadowRoot.getElementById("value");
 
-    const progress = this._shadowRoot.getElementById("progress");
-    const label = this._shadowRoot.getElementById("label");
+    const pathLength = progress.getTotalLength();
 
     progress.style.stroke = color;
-    progress.style.strokeDasharray = circumference;
+    progress.style.strokeDasharray = pathLength;
 
-    const offset = circumference * (1 - value / 100);
+    const offset = pathLength * (1 - value / 100);
     progress.style.strokeDashoffset = offset;
 
-    label.textContent = value + "%";
+    valueText.textContent = value + "%";
   }
 }
 
