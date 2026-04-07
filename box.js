@@ -50,29 +50,14 @@ class SimpleGauge extends HTMLElement {
     
 	let value = 0;
 
-	  try {
+	  let value = 0;
 
-		console.log("DataBinding:", this.dataBinding);
+	  if (this.dataBinding && this.dataBinding.data) {
+		const data = this.dataBinding.data;
 
-		if (this.dataBinding && this.dataBinding.data) {
-
-		  const data = this.dataBinding.data;
-
-		  // 🔒 sicherstellen dass Array
-		  if (Array.isArray(data)) {
-			if (data.length > 0 && data[0].value !== undefined) {
-			  value = data[0].value;
-			}
-		  } else {
-			console.log("Data is NOT array:", data);
-		  }
-
-		} else {
-		  console.log("No dataBinding available");
+		if (Array.isArray(data) && data.length > 0) {
+		  value = data[0].rawValue ?? data[0].value;
 		}
-
-	  } catch (e) {
-		console.error("ERROR:", e);
 	  }
 
 	  const progress = this.shadowRoot.getElementById("progress");
