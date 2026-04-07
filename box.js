@@ -59,21 +59,23 @@ onDataChanged() {
   if (!binding) return;
 
   const resultSet = binding.getResultSet();
-  if (!resultSet || !Array.isArray(resultSet)) return;
+  if (!Array.isArray(resultSet) || resultSet.length === 0) return;
+	
 
-  if (resultSet.length === 0) return;
-
-  // Erste Zelle, erste Measure
-  const cell = resultSet[0]?.[1];
+// ✅ erste Zeile, erste Kennzahl
+  const cell = resultSet[0][1];
   if (!cell) return;
 
-  const value = Number(cell.raw) || 0;
+  let value = Number(cell.raw);
+  if (isNaN(value)) value = 0;
+
+  // ✅ Prozent-Werte korrekt behandeln
+  // Fall A: Wert kommt als 0.41 → 41 %
+  if (value <= 1) {
+    value = value * 100;
+  }
   this.setValue(value);
 }
-
-
-
-
 
   updateGauge() {
     const progress = this.shadowRoot.getElementById("progress");
