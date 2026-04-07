@@ -36,7 +36,7 @@ class SimpleGauge extends HTMLElement {
         />
 
         <!-- Wert -->
-        <text id="value" x="100" y="70">50%</text>
+        <text id="value" x="100" y="70">--%</text>
 
         <!-- Label -->
         <text id="label" x="100" y="95" style="font-size:14px; fill:#777;">
@@ -46,36 +46,36 @@ class SimpleGauge extends HTMLElement {
     `;
   }
 
- 
-
- 
-
-
-
 onDataChanged() {
+  console.log("onDataChanged called"); // 🔍 Debug
+
   if (!this.dataBindings) return;
 
   const binding = this.dataBindings.getDataBinding("data");
+  console.log("binding:", binding);
+
   if (!binding) return;
 
   const resultSet = binding.getResultSet();
-  if (!Array.isArray(resultSet) || resultSet.length === 0) return;
-	
+  console.log("resultSet:", resultSet);
 
-// ✅ erste Zeile, erste Kennzahl
+  if (!Array.isArray(resultSet) || resultSet.length === 0) return;
+
+  // ✅ erste Zeile, erste Kennzahl
   const cell = resultSet[0][1];
   if (!cell) return;
 
   let value = Number(cell.raw);
-  if (isNaN(value)) value = 0;
+  console.log("raw value:", value);
 
-  // ✅ Prozent-Werte korrekt behandeln
-  // Fall A: Wert kommt als 0.41 → 41 %
+  // ✅ Prozent-Normalisierung
   if (value <= 1) {
     value = value * 100;
   }
+
   this.setValue(value);
 }
+
 
   updateGauge() {
     const progress = this.shadowRoot.getElementById("progress");
