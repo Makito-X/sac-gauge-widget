@@ -49,39 +49,46 @@ class SimpleGauge extends HTMLElement {
   onCustomWidgetAfterUpdate() {
     
 	let value = 0;
-	
-	if (this.dataBinding && this.dataBinding.data) {
-		const data = this.dataBinding.data;
 
-		// 🔒 prüfen ob Array
-		if (Array.isArray(data) && data.length > 0) {
+	  try {
 
-		  if (data[0] && data[0].value !== undefined) {
-			value = data[0].value;
+		console.log("DataBinding:", this.dataBinding);
+
+		if (this.dataBinding && this.dataBinding.data) {
+
+		  const data = this.dataBinding.data;
+
+		  // 🔒 sicherstellen dass Array
+		  if (Array.isArray(data)) {
+			if (data.length > 0 && data[0].value !== undefined) {
+			  value = data[0].value;
+			}
+		  } else {
+			console.log("Data is NOT array:", data);
 		  }
 
 		} else {
-		  console.log("Data is not array:", data);
+		  console.log("No dataBinding available");
 		}
-    } else {
-	  console.log("No dataBinding yet");
-    }
 
-    const color = this.color || "#00bcd4";
+	  } catch (e) {
+		console.error("ERROR:", e);
+	  }
 
-    const progress = this.shadowRoot.getElementById("progress");
-    const valueText = this.shadowRoot.getElementById("value");
+	  const progress = this.shadowRoot.getElementById("progress");
+	  const valueText = this.shadowRoot.getElementById("value");
 
-    const pathLength = progress.getTotalLength();
+	  if (!progress || !valueText) return;
 
-    progress.style.stroke = color;
-    progress.style.strokeDasharray = pathLength;
+	  const pathLength = progress.getTotalLength();
 
-    const offset = pathLength * (1 - value / 100);
-    progress.style.strokeDashoffset = offset;
+	  progress.style.strokeDasharray = pathLength;
 
-    valueText.textContent = value + "%";
-  }
+	  const offset = pathLength * (1 - value / 100);
+	  progress.style.strokeDashoffset = offset;
+
+	  valueText.textContent = value + "%";
+	}
 }
 
 customElements.define("com-simple-gauge", SimpleGauge);
