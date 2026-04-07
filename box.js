@@ -1,7 +1,7 @@
 class SimpleGauge extends HTMLElement {
   constructor() {
     super();
-
+	this._value = 0;
     this.attachShadow({ mode: "open" });
 
     this.shadowRoot.innerHTML = `
@@ -48,26 +48,21 @@ class SimpleGauge extends HTMLElement {
 
  
 
-  onDataChanged() {
-    const binding = this.dataBindings.getDataBinding("value");
+ 
+onDataChanged() {
+    if (!this.dataBindings) return;
 
-    if (!binding) {
-      this.setValue(0);
-      return;
-    }
+    const binding = this.dataBindings.getDataBinding("value");
+    if (!binding) return;
 
     const data = binding.getData();
-
-    if (!data || data.length === 0) {
-      this.setValue(0);
-      return;
-    }
+    if (!data || data.length === 0) return;
 
     this.setValue(data[0].value);
   }
 
   setValue(val) {
-    this.value = val;
+    this._value = Number(val) || 0;
     this.updateGauge();
   }
 
@@ -83,9 +78,10 @@ class SimpleGauge extends HTMLElement {
 
     const pathLength = progress.getTotalLength();
     progress.style.strokeDasharray = pathLength;
-    progress.style.strokeDashoffset = pathLength * (1 - this.value / 100);
+    progress.style.strokeDashoffset =
+      pathLength * (1 - this._value / 100);
 
-    valueText.textContent = Math.round(this.value) + "%";
+    valueText.textContent = Math.round(this._value) + "%";
   }
 }
 
