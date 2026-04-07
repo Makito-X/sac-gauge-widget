@@ -1,3 +1,4 @@
+alert("box.js loaded");
 console.log("✅ box.js loaded");
 class SimpleGauge extends HTMLElement {
   constructor() {
