@@ -1,4 +1,3 @@
-console.log("CELL:", cell)
 class SimpleGauge extends HTMLElement {
   constructor() {
     super();
