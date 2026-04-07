@@ -46,14 +46,21 @@ class SimpleGauge extends HTMLElement {
     `;
   }
 
- // Wird von SAC aufgerufen, wenn sich Properties ändern
-  onCustomWidgetAfterUpdate(changedProperties) {
+ onCustomWidgetAfterUpdate() {
     this.updateGauge();
   }
 
   updateGauge() {
-    const value = this.value || 0;
-    const color = this.color || "#00bcd4";
+    let value = 0;
+
+    // 🔥 Daten aus SAC holen
+    if (this.dataBinding && this.dataBinding.data) {
+      const data = this.dataBinding.data;
+
+      if (Array.isArray(data) && data.length > 0) {
+        value = data[0].rawValue ?? data[0].value ?? 0;
+      }
+    }
 
     const progress = this.shadowRoot.getElementById("progress");
     const valueText = this.shadowRoot.getElementById("value");
@@ -62,19 +69,13 @@ class SimpleGauge extends HTMLElement {
 
     const pathLength = progress.getTotalLength();
 
-    // Farbe setzen
-    progress.style.stroke = color;
-
-    // Halbkreis Fortschritt berechnen
     progress.style.strokeDasharray = pathLength;
 
     const offset = pathLength * (1 - value / 100);
     progress.style.strokeDashoffset = offset;
 
-    // Text setzen
     valueText.textContent = Math.round(value) + "%";
   }
 }
 
-// WICHTIG!
 customElements.define("com-simple-gauge", SimpleGauge);
