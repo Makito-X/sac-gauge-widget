@@ -50,33 +50,23 @@ class SimpleGauge extends HTMLElement {
 
  
 
+
 onDataChanged() {
-  if (!this.dataBindings) {
-    return;
-  }
+  if (!this.dataBindings) return;
 
   const binding = this.dataBindings.getDataBinding("value");
-  if (!binding) {
-    return;
-  }
+  if (!binding) return;
 
   const dataObj = binding.getData();
-  if (!dataObj || !dataObj.data || !Array.isArray(dataObj.data)) {
-    return;
-  }
+  if (!dataObj || !Array.isArray(dataObj.data)) return;
 
   const firstCell = dataObj.data[0];
-  if (!firstCell) {
-    return;
-  }
+  if (!firstCell) return;
 
-  const value =
-    typeof firstCell.raw === "number"
-      ? firstCell.raw
-      : Number(firstCell.raw);
-
+  const value = Number(firstCell.raw) || 0;
   this.setValue(value);
 }
+
 
   updateGauge() {
     const progress = this.shadowRoot.getElementById("progress");
