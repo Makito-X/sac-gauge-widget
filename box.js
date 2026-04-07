@@ -54,18 +54,20 @@ class SimpleGauge extends HTMLElement {
 onDataChanged() {
   if (!this.dataBindings) return;
 
-  const binding = this.dataBindings.getDataBinding("value");
-  if (!binding) return;
+  const measureBinding = this.dataBindings.getDataBinding("measure");
+  if (!measureBinding) return;
 
-  const dataObj = binding.getData();
+  const dataObj = measureBinding.getData();
   if (!dataObj || !Array.isArray(dataObj.data)) return;
 
-  const firstCell = dataObj.data[0];
-  if (!firstCell) return;
+  const cell = dataObj.data[0];
+  if (!cell) return;
 
-  const value = Number(firstCell.raw) || 0;
+  const value = Number(cell.raw) || 0;
   this.setValue(value);
 }
+
+
 
 
   updateGauge() {
