@@ -1,6 +1,8 @@
+console.log("✅ box.js loaded");
 class SimpleGauge extends HTMLElement {
   constructor() {
     super();
+	console.log("✅ constructor called");
 	this._value = 0;
     this.attachShadow({ mode: "open" });
 
