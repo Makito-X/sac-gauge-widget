@@ -47,23 +47,46 @@ class SimpleGauge extends HTMLElement {
   }
 
  
-onDataChanged() {
-  const binding = this.dataBindings.getDataBinding("value");
 
-  if (!binding) {
-    this.setValue(0);
-    return;
+  onDataChanged() {
+    const binding = this.dataBindings.getDataBinding("value");
+
+    if (!binding) {
+      this.setValue(0);
+      return;
+    }
+
+    const data = binding.getData();
+
+    if (!data || data.length === 0) {
+      this.setValue(0);
+      return;
+    }
+
+    this.setValue(data[0].value);
   }
 
-  const data = binding.getData();
-
-  if (!data || data.length === 0) {
-    this.setValue(0);
-    return;
+  setValue(val) {
+    this.value = val;
+    this.updateGauge();
   }
 
-  // SAC liefert numerische Werte als Objekt
-  const val = data[0].value;
+  onCustomWidgetAfterUpdate() {
+    this.updateGauge();
+  }
 
-  this.setValue(val);
+  updateGauge() {
+    const progress = this.shadowRoot.getElementById("progress");
+    const valueText = this.shadowRoot.getElementById("value");
+
+    if (!progress || !valueText) return;
+
+    const pathLength = progress.getTotalLength();
+    progress.style.strokeDasharray = pathLength;
+    progress.style.strokeDashoffset = pathLength * (1 - this.value / 100);
+
+    valueText.textContent = Math.round(this.value) + "%";
+  }
 }
+
+customElements.define("com-simple-gauge", SimpleGauge);
