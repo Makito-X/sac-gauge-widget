@@ -51,21 +51,26 @@ class SimpleGauge extends HTMLElement {
  
 
 
+
 onDataChanged() {
   if (!this.dataBindings) return;
 
-  const measureBinding = this.dataBindings.getDataBinding("measure");
-  if (!measureBinding) return;
+  const binding = this.dataBindings.getDataBinding("data");
+  if (!binding) return;
 
-  const dataObj = measureBinding.getData();
-  if (!dataObj || !Array.isArray(dataObj.data)) return;
+  const resultSet = binding.getResultSet();
+  if (!resultSet || !Array.isArray(resultSet)) return;
 
-  const cell = dataObj.data[0];
+  if (resultSet.length === 0) return;
+
+  // Erste Zelle, erste Measure
+  const cell = resultSet[0]?.[1];
   if (!cell) return;
 
   const value = Number(cell.raw) || 0;
   this.setValue(value);
 }
+
 
 
 
