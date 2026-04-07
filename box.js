@@ -1,9 +1,8 @@
-alert("box.js loaded");
-console.log("✅ box.js loaded");
+console.log("CELL:", cell)
 class SimpleGauge extends HTMLElement {
   constructor() {
     super();
-	console.log("✅ constructor called");
+	console.log("constructor called");
 	this._value = 0;
     this.attachShadow({ mode: "open" });
 
@@ -51,34 +50,48 @@ class SimpleGauge extends HTMLElement {
 
 
 
+
 onCustomWidgetBeforeUpdate(changedProperties) {
-    console.log("changedProperties", changedProperties);
-
-    if (!changedProperties || !changedProperties.dataBindings) {
-      return;
-    }
-
-    const binding =
-      changedProperties.dataBindings.data;
-
-    if (!binding || !binding.resultSet) {
-      return;
-    }
-
-    const rs = binding.resultSet;
-    if (!Array.isArray(rs) || rs.length === 0) return;
-
-    const cell = rs[0][1];
-    if (!cell) return;
-
-    let value = Number(cell.raw);
-    if (isNaN(value)) return;
-
-    if (value <= 1) value *= 100;
-
-    this._value = value;
-    this.updateGauge();
+  if (
+    !changedProperties ||
+    !changedProperties.dataBindings ||
+    !changedProperties.dataBindings.data
+  ) {
+    return;
   }
+
+  const rs = changedProperties.dataBindings.data.resultSet;
+  if (!Array.isArray(rs) || rs.length === 0) return;
+
+  const cell = rs[0][1];
+  if (!cell) return;
+
+  let value = null;
+
+  // ✅ 1. Versuch: raw
+  if (cell.raw !== null && cell.raw !== undefined && cell.raw !== "") {
+    value = Number(cell.raw);
+  }
+
+  // ✅ 2. Fallback: formatted ("41 %" → 41)
+  if ((value === null || isNaN(value)) && typeof cell.formatted === "string") {
+    value = Number(cell.formatted.replace("%", "").replace(",", ".").trim());
+  }
+
+  if (isNaN(value)) {
+    console.warn("Kein gültiger Prozentwert gefunden:", cell);
+    return;
+  }
+
+  // ✅ Falls 0–1 geliefert wird → auf Prozent skalieren
+  if (value <= 1) {
+    value = value * 100;
+  }
+
+  this._value = value;
+  this.updateGauge();
+}
+
 
   updateGauge() {
     const progress = this.shadowRoot.getElementById("progress");
