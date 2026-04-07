@@ -47,15 +47,16 @@ class SimpleGauge extends HTMLElement {
   }
 
   onCustomWidgetAfterUpdate() {
-    if (this.dataBinding && this.dataBinding.data) {
-    const data = this.dataBinding.data;
+    
+	let value = 0;
+	
+	if (this.dataBinding && this.dataBinding.data) {
+		const data = this.dataBinding.data;
 
-    if (data.length > 0) {
-      const value = data[0].value;
-      this.value = value;
+		if (data.length > 0) {
+		  const value = data[0].value;
+		}
     }
-  }
-	const value = this.value || 0;
     const color = this.color || "#00bcd4";
 
     const progress = this.shadowRoot.getElementById("progress");
