@@ -78,11 +78,6 @@ onDataChanged() {
   this.setValue(value);
 }
 
-
-  onCustomWidgetAfterUpdate() {
-    this.updateGauge();
-  }
-
   updateGauge() {
     const progress = this.shadowRoot.getElementById("progress");
     const valueText = this.shadowRoot.getElementById("value");
