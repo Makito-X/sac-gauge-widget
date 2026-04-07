@@ -49,36 +49,36 @@ class SimpleGauge extends HTMLElement {
     `;
   }
 
-onDataChanged() {
-  console.log("onDataChanged called"); // 🔍 Debug
 
-  if (!this.dataBindings) return;
+onCustomWidgetAfterUpdate() {
+    if (!this.dataBindings) return;
 
-  const binding = this.dataBindings.getDataBinding("data");
-  console.log("binding:", binding);
+    const binding = this.dataBindings.getDataBinding("data");
+    if (!binding) return;
 
-  if (!binding) return;
+    const resultSet = binding.getResultSet();
+    if (!Array.isArray(resultSet) || resultSet.length === 0) return;
 
-  const resultSet = binding.getResultSet();
-  console.log("resultSet:", resultSet);
+    // ✅ erste Zeile, erste Kennzahl
+    const cell = resultSet[0][1];
+    if (!cell) return;
 
-  if (!Array.isArray(resultSet) || resultSet.length === 0) return;
+    let value = Number(cell.raw);
+    if (isNaN(value)) value = 0;
 
-  // ✅ erste Zeile, erste Kennzahl
-  const cell = resultSet[0][1];
-  if (!cell) return;
+    // ✅ Prozent-Normalisierung
+    // 0.41 → 41 %
+    if (value <= 1) {
+      value = value * 100;
+    }
 
-  let value = Number(cell.raw);
-  console.log("raw value:", value);
-
-  // ✅ Prozent-Normalisierung
-  if (value <= 1) {
-    value = value * 100;
+    this.setValue(value);
   }
 
-  this.setValue(value);
-}
-
+  setValue(val) {
+    this._value = val;
+    this.updateGauge();
+  }
 
   updateGauge() {
     const progress = this.shadowRoot.getElementById("progress");
@@ -88,11 +88,13 @@ onDataChanged() {
 
     const pathLength = progress.getTotalLength();
     progress.style.strokeDasharray = pathLength;
-    progress.style.strokeDashoffset =
-      pathLength * (1 - this._value / 100);
+
+    const offset = pathLength * (1 - this._value / 100);
+    progress.style.strokeDashoffset = offset;
 
     valueText.textContent = Math.round(this._value) + "%";
   }
 }
 
 customElements.define("com-simple-gauge", SimpleGauge);
+
