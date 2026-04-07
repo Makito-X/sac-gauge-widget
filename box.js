@@ -46,34 +46,35 @@ class SimpleGauge extends HTMLElement {
     `;
   }
 
-  onCustomWidgetAfterUpdate() {
-    
-	let value = 0;
+ // Wird von SAC aufgerufen, wenn sich Properties ändern
+  onCustomWidgetAfterUpdate(changedProperties) {
+    this.updateGauge();
+  }
 
-	  let value = 0;
+  updateGauge() {
+    const value = this.value || 0;
+    const color = this.color || "#00bcd4";
 
-	  if (this.dataBinding && this.dataBinding.data) {
-		const data = this.dataBinding.data;
+    const progress = this.shadowRoot.getElementById("progress");
+    const valueText = this.shadowRoot.getElementById("value");
 
-		if (Array.isArray(data) && data.length > 0) {
-		  value = data[0].rawValue ?? data[0].value;
-		}
-	  }
+    if (!progress || !valueText) return;
 
-	  const progress = this.shadowRoot.getElementById("progress");
-	  const valueText = this.shadowRoot.getElementById("value");
+    const pathLength = progress.getTotalLength();
 
-	  if (!progress || !valueText) return;
+    // Farbe setzen
+    progress.style.stroke = color;
 
-	  const pathLength = progress.getTotalLength();
+    // Halbkreis Fortschritt berechnen
+    progress.style.strokeDasharray = pathLength;
 
-	  progress.style.strokeDasharray = pathLength;
+    const offset = pathLength * (1 - value / 100);
+    progress.style.strokeDashoffset = offset;
 
-	  const offset = pathLength * (1 - value / 100);
-	  progress.style.strokeDashoffset = offset;
-
-	  valueText.textContent = value + "%";
-	}
+    // Text setzen
+    valueText.textContent = Math.round(value) + "%";
+  }
 }
 
+// WICHTIG!
 customElements.define("com-simple-gauge", SimpleGauge);
